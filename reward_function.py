@@ -11,6 +11,7 @@ def reward_function(params):
     is_offtrack = params["is_offtrack"]
     closest_waypoints = params["closest_waypoints"]
     is_left_of_center = params["is_left_of_center"]
+    steering_angle = abs(params["steering_angle"])
     
     # Initialize reward
     reward = 1.0  # Start with a base reward
@@ -24,13 +25,13 @@ def reward_function(params):
         reward *= 0.5  # Reduce reward instead of subtracting
     
     # Center waypoints (main racing line)
-    center_waypoints = list(range(26, 38)) + [44,58, 59, 60, 61, 77, 78] + list(range(1, 18))
+    center_waypoints = list(range(26, 38)) + [44,61, 77, 78] + [1 , 2, 3, 4, 5]
     
     # Outer waypoints (for wider turns)
-    outer_waypoints = list(range(38, 44)) + list(range(62, 70))
+    outer_waypoints = list(range(38, 44)) + list(range(62, 70)) + [13, 14, 15, 16, 17]
 
     # Inner waypoints (for tighter turns)
-    inner_waypoints = list(range(45, 59)) + list(range(70, 77)) + list(range(18, 26))
+    inner_waypoints = list(range(45, 61)) + list(range(70, 77)) + list(range(18, 26)) + [6, 7, 8, 9, 10, 11, 12]
     
     # Calculate markers for track position
     marker_1 = 0.1 * track_width
@@ -70,8 +71,15 @@ def reward_function(params):
         else:
             reward *= 0.8
     
+    # Steering penalty for waypoints 60-70
+    if closest_waypoints[1] in range(60, 71):
+        if steering_angle > 15:  # Penalize sharp steering
+            reward *= 0.8
+        elif steering_angle > 10:
+            reward *= 0.9
+    
     # Basic speed reward - encourage maintaining reasonable speed
-    if speed > 0.5 and speed < 3:
+    if speed > 0.5 and speed < 3.5:
         reward *= 1.1
     
     # Progress reward
