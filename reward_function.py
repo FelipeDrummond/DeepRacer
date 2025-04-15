@@ -79,7 +79,7 @@ def reward_function(params):
             reward *= 0.9
     
     # Basic speed reward - encourage maintaining reasonable speed
-    if speed > 0.5 and speed < 3.5:
+    if speed > 1 and speed < 3.5:
         reward *= 1.1
     
     # Progress reward
